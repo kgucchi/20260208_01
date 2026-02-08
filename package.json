@@ -4,10 +4,11 @@
   "description": "覆面調査レポート作成 - Autonomous development powered by Miyabi",
   "type": "module",
   "scripts": {
+    "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "agents:parallel:exec": "node scripts/parallel-executor.js"
+    "agents:parallel:exec": "npm run build && node dist/scripts/parallel-executor.js"
   },
   "keywords": [
     "miyabi",
