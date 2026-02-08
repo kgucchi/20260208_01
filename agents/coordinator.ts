@@ -23,7 +23,14 @@ export class CoordinatorAgent {
   constructor(config: CoordinatorConfig) {
     this.issueNumber = config.issueNumber;
     this.issueAgent = new IssueAgent(config.githubToken, config.repository);
-    this.codegenAgent = new CodeGenAgent(config.anthropicApiKey);
+
+    // モックモードの判定（APIキーが'mock'または環境変数USE_MOCK_CODEGENが設定されている場合）
+    const useMock = config.anthropicApiKey === 'mock' ||
+                    process.env.USE_MOCK_CODEGEN === 'true' ||
+                    !config.anthropicApiKey ||
+                    config.anthropicApiKey.length < 10;
+
+    this.codegenAgent = new CodeGenAgent(config.anthropicApiKey, useMock);
     this.prAgent = new PRAgent(config.githubToken, config.repository);
   }
 

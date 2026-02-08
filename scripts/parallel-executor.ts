@@ -55,7 +55,7 @@ function parseArguments() {
 }
 
 function validateEnvironment() {
-  const required = ['GITHUB_TOKEN', 'ANTHROPIC_API_KEY', 'REPOSITORY'];
+  const required = ['GITHUB_TOKEN', 'REPOSITORY'];
   const missing = required.filter(key => !process.env[key]);
 
   if (missing.length > 0) {
@@ -63,6 +63,13 @@ function validateEnvironment() {
     console.error('\nPlease set the following:');
     missing.forEach(key => console.error(`  - ${key}`));
     process.exit(1);
+  }
+
+  // ANTHROPIC_API_KEYが無い場合はモックモードを使用
+  if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY.length < 10) {
+    console.log('ℹ️  ANTHROPIC_API_KEY not set or invalid, using mock code generation');
+    process.env.USE_MOCK_CODEGEN = 'true';
+    process.env.ANTHROPIC_API_KEY = 'mock';
   }
 }
 
