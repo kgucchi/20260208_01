@@ -6,6 +6,7 @@
  */
 
 import { parseArgs } from 'node:util';
+import { CoordinatorAgent } from '../agents/coordinator.js';
 
 const HELP_MESSAGE = `
 Autonomous Operations - Parallel Executor
@@ -20,6 +21,11 @@ Options:
 
 Example:
   npm run agents:parallel:exec -- --issue 2 --concurrency 3 --log-level info
+
+Environment Variables Required:
+  GITHUB_TOKEN           GitHub Personal Access Token
+  ANTHROPIC_API_KEY      Anthropic API Key
+  REPOSITORY             Repository in format owner/repo
 `;
 
 function parseArguments() {
@@ -47,6 +53,18 @@ function parseArguments() {
   }
 }
 
+function validateEnvironment() {
+  const required = ['GITHUB_TOKEN', 'ANTHROPIC_API_KEY', 'REPOSITORY'];
+  const missing = required.filter(key => !process.env[key]);
+
+  if (missing.length > 0) {
+    console.error(`❌ Missing required environment variables: ${missing.join(', ')}`);
+    console.error('\nPlease set the following:');
+    missing.forEach(key => console.error(`  - ${key}`));
+    process.exit(1);
+  }
+}
+
 async function main() {
   const args = parseArguments();
 
@@ -57,20 +75,27 @@ async function main() {
   console.log(`Log Level: ${args['log-level']}`);
   console.log('');
 
-  // GitHub Actions環境での実行を想定
-  // 実際のエージェント実行ロジックはここに実装予定
-  console.log('ℹ️  Agent execution framework ready');
-  console.log('ℹ️  This is a placeholder. Actual agent logic will be implemented based on issue requirements.');
-
   if (!args.issue) {
     console.log('⚠️  No issue number provided. Use --issue <number> to specify an issue.');
     return;
   }
 
-  console.log(`✅ Mock execution complete for issue #${args.issue}`);
+  // 環境変数チェック
+  validateEnvironment();
+
+  // CoordinatorAgentを実行
+  const coordinator = new CoordinatorAgent({
+    githubToken: process.env.GITHUB_TOKEN,
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY,
+    repository: process.env.REPOSITORY,
+    issueNumber: parseInt(args.issue, 10),
+  });
+
+  await coordinator.execute();
 }
 
 main().catch(error => {
-  console.error('❌ Execution failed:', error.message);
+  console.error('❌ Execution failed:', error);
+  console.error(error.stack);
   process.exit(1);
 });
