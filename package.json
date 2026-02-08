@@ -1,0 +1,28 @@
+{
+  "name": "20260208_01",
+  "version": "1.0.0",
+  "description": "覆面調査レポート作成 - Autonomous development powered by Miyabi",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "agents:parallel:exec": "node scripts/parallel-executor.js"
+  },
+  "keywords": [
+    "miyabi",
+    "autonomous",
+    "ai-agents"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.17.0",
+    "@octokit/rest": "^20.0.2"
+  }
+}
